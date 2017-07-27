@@ -20,8 +20,8 @@ class m201706250740_UsersLogins
             $table->foreign('userId')
                 ->references('id')->on('users')
                 ->onDelete('cascade');
-            $table->datetime('dt_login');
-            $table->datetime('dt_logout');
+            $table->datetime('dt_login')->nullable();
+            $table->datetime('dt_logout')->nullable();
         });
     }
 }

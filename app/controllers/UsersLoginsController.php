@@ -41,6 +41,60 @@ class UsersLoginsController extends BaseApiController
         }
         return $this->ret($result,$response);
     }
+    public function insertLogin(Request $request, Response $response){
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+        if (is_null($data) || (!isset($data['dt_login']) && !isset($data['dt_logout'])) || (!isset($data['id']))){
+            $result=json_encode(['Empty data']);
+            return $this->ret($result,$response);
+        }
+        $userId = $data['id'];
+        $user = User::where('id', $userId)->first();
+
+        if (is_null($user)){
+            $result=json_encode(['User not found']);
+            return $this->ret($result,$response);
+        }
+
+        $userLogins = new UsersLogin();
+        $userLogins->userId = $userId;
+        if (isset($data['dt_login']) && !isset($data['dt_logout'])) {
+            $_userLogins = UsersLogin::where('userId', $userId)
+                ->where('dt_logout',null)
+                ->first();
+            if (!is_null($_userLogins)){
+                $result=json_encode(['User must logout before next login']);
+                return $this->ret($result,$response);
+            }else{
+                $userLogins->dt_login = $data['dt_login'];
+            }
+
+
+        }elseif (isset($data['dt_logout']) && !isset($data['dt_login'])) {
+            $_userLogins = UsersLogin::where('userId', $userId)
+                ->where('dt_logout',null)
+                ->whereNotNull('dt_login')
+                ->first();
+            if (!is_null($_userLogins)){
+                $userLogins=$_userLogins;
+                $userLogins->dt_logout = $data['dt_logout'];
+            }else {
+                $result=json_encode(['User must login before logout']);
+                return $this->ret($result,$response);
+
+            }
+        }else{
+
+        }
+        try {
+            $userLogins->save();
+            $result=json_encode(['User login saved successfully']);
+        }catch(Exception $e){
+            $result=json_encode(['User login did not save-'.$e->getMessage()]);
+        }
+        return $this->ret($result,$response);
+
+    }
     public function csv(Request $request, Response $response)
     {
         $userId = $request->getAttribute('id');

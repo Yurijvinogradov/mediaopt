@@ -28,6 +28,7 @@ $app->group('/api', function () use ($app) {
             $app->get('/', '\App\Controllers\UsersController:getAll');
             $app->get('/{id:[0-9]+}', '\App\Controllers\UsersController:get');
 
+
         });
         $app->group('/projects', function () use ($app) {
             $app->get('', '\App\Controllers\ProjectsController:getAll');
@@ -41,6 +42,7 @@ $app->group('/api', function () use ($app) {
             $app->get('', '\App\Controllers\UsersLoginsController:getAll');
             $app->get('/', '\App\Controllers\UsersLoginsController:getAll');
             $app->get('/{id:[0-9]+}', '\App\Controllers\UsersLoginsController:get');
+            $app->post('', '\App\Controllers\UsersLoginsController:insertLogin');
             $app->post('/{id:[0-9]+}/csv', '\App\Controllers\UsersLoginsController:csv');
 
         });
